@@ -21,20 +21,38 @@ def dictionary_dump(filename, **kwargs):
 def bowling_score(game):
 
     '''
-    >>> bowling_score('XXXXXXXXXXXX')
+    >>> rf.bowling_score("-9,18,27,36,45,45,36,27,18,-9")
+    90
+    >>> rf.bowling_score("09,18,29,36,45,45,36,27,18,09")
+    ERROR: How did you knock down more than 9 pins and not get a spare or strike?
+    False
+    >>> bowling_score('X,X,X,X,X,X,X,X,X,X,X,X')
     300
     '''
     total = 0
-    spare = False
-    strike_1 = False
-    strike_2 = False
 
-    for roll in game:
-        if int(roll) in range(10):
-            total += int(roll)
-        if roll == '-':
-            total += 0
-        if roll == '/':
+    frames = game.split(',')
+    for i, frame in enumerate(frames):
+        if len(frame) > 2:
+            print "ERROR: Too many rolls in this frame"
+            return False
+        if frame == 'X':
+            # look ahead 2 rolls
             pass
+        elif frame.endswith('/'):
+            # look ahead 1 roll
+            pass
+        else:
+            total_this_frame = 0
+            for roll in frame:
+                if roll == '-':
+                    roll = 0
+                total_this_frame += int(roll)
+            if total_this_frame <= 9:
+                total += total_this_frame
+            else:
+                print ("ERROR: How did you knock down more than 9 pins and " +
+                      "not get a spare or strike?")
+                return False
 
     return total
